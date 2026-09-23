@@ -32,9 +32,7 @@ geriye dönük test** edilmiştir.
 9. [Öğrenme döngüsü ve trend analizi](#9-öğrenme-döngüsü-ve-trend-analizi)
 10. [Testler](#10-testler)
 11. [Kurulum ve çalıştırma](#11-kurulum-ve-çalıştırma)
-12. [Varsayımlar ve bilinen sınırlar](#12-varsayımlar-ve-bilinen-sınırlar)
-13. [Bir şirkette ilk neyi değiştirirdim](#13-bir-şirkette-ilk-neyi-değiştirirdim)
-14. [Repo yapısı](#14-repo-yapısı)
+12. [Repo yapısı](#12-repo-yapısı)
 
 ---
 
@@ -314,7 +312,7 @@ Ağırlıklar standarttır, veriye bakılarak seçilmedi.
 | Onay tutarı | 3000 EUR | Politika Madde 6 |
 | Belirsizlik — val sMAPE | %20 | Zincir ortalamasının belirgin üstü |
 | Belirsizlik — val kapsama | binom p < 0.05 | Nominal %80'in anlamlı altı |
-| İndirim elastikiyeti | 1.5 | **Varsayım** (bkz. sınırlar) |
+| İndirim elastikiyeti | 1.5 | **Varsayım** — gerçek fiyat testi verisi yok |
 
 ### Çıktı şeması
 
@@ -478,7 +476,7 @@ verir, mal bozulur. En pahalı 10 kaçırmanın 8'i **Cumartesi** — model
 Cumartesiyi fazla tahmin ediyor (bias +1.95, p10 altı %17.4). **Model
 hatasının karar katmanına sızdığı somut nokta budur.** Beklenen fire sinyali
 bunu kısmen yakalar; kalanı bandın dar olmasından gelir ve karar
-katmanıyla kapatılamaz (bkz. bölüm 13).
+katmanıyla kapatılamaz: çözüm bandın kalibrasyonundadır.
 
 **Kapalı gün firesi.** Politika düzeyindeki fire (503.677 EUR) ile açık gün
 firesi (341.616 EUR) arasındaki fark kapalı günlerden gelir (çoğunlukla
@@ -695,54 +693,7 @@ python senaryo_uret.py                     # Telegram test senaryoları
 
 ---
 
-## 12. Varsayımlar ve bilinen sınırlar
-
-1. **Tek kategori, türetilmiş adet.** Rossmann'da ürün kırılımı yok; taze
-   kategori ciro × 0.20 / 8 EUR ile türetildi.
-2. **Başlangıç stoku ve tedarikçi sözleşmeleri sentetiktir.** RAG belgeleri
-   proje için üretildi.
-3. **İndirim elastikiyeti varsayımdır (1.5).** Doğrusal erime modelinde
-   getiri s·e·o·(1−o)·fiyat'tır ve maksimumu e ≤ 2 için her zaman o = 0.5'tedir;
-   %30'u yalnız "peş peşe iki gün %50" kısıtı seçtirir.
-4. **Backtest indirimin etkisini simüle etmez;** indirim sinyali
-   gerçekleşen fireyle kıyaslanır.
-5. **Sipariş kararı gün bazında değil politika düzeyinde değerlendirilir;**
-   bugünkü sipariş varış gününü kurtarır.
-6. **Fire sinyali bandın genişliğiyle sınırlı.** Beklenen fire tahmin
-   hatasını kısmen görür; bant dar olduğu için ilk haftadan sonra yakalama
-   düşüktür.
-7. **Karşı-olgusal zincir yok.** Agent'ın gün bazlı indirim kararlarının
-   sonraki günlere etkisi simüle edilmez.
-8. **`tipik_gunluk_talep_adet` ile günlük tahmin arasında ölçek farkı var.**
-   Fire oranı politika Madde 6.1 ile tutarlı olmak için ilkini kullanır.
-9. **Onaylanmış karar tekrar sorulursa** karar defteri `appendOrUpdate` ile
-   satırı `onay_bekliyor`'a döndürür.
-10. **İndirim geçmişi interaktif modda yazılmaz;** ardışık gün kısıtı yalnız
-    toplu modda gerçek geçmişe dayanır.
-11. **Sohbet geçmişi süreç belleğinde,** uç noktalarda kimlik doğrulama yok
-    (yalnız localhost). Üretimde kalıcı oturum deposu ve API anahtarı gerekir.
-12. **Fire sinyali test backtest'indeki bir bulguya dayanarak
-    değiştirildi.** Eşik ayarlanmadı, tasarım gerekçesiyle değişti; iki
-    sürümün sonucu da raporlandı (bölüm 8).
-
----
-
-## 13. Bir şirkette ilk neyi değiştirirdim
-
-1. **Ufka göre ve asimetrik bant kalibrasyonu.** Drift, backtest ve fire
-   bulgusu aynı noktayı gösteriyor: nokta tahmin sağlam, bant zamanla daralıyor
-   ve yön değiştiriyor. Tek global katsayı (CQR) yetmedi; her ufuk haftası ve
-   her kuyruk için ayrı katsayı val origin'lerinden öğrenilmeli. Bu, model
-   hatasının bedelini (628.793 EUR) doğrudan hedefler.
-2. **Fire eşiğini bağımsız bir dönemde doğrulamak.** Duyarlılık tablosu 0.20–0.30
-   aralığını işaret ediyor, ama test üzerinden seçilemez.
-3. **Gerçek fiyat testi** ile indirim elastikiyetini ölçmek.
-4. **Karşı-olgusal stok motoru** ile gün bazlı kararların zincir etkisini
-   ölçmek.
-
----
-
-## 14. Repo yapısı
+## 12. Repo yapısı
 
 ```
 ├── README.md
