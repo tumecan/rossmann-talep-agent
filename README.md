@@ -186,6 +186,8 @@ Farkın büyüklüğü LR'den değil kapsama açığından okunmalı.
 | Talep Q1 (küçük) | 5.369 | 9.57 | −0.59 | 76.1 | Küçük mağazada hata yüksek |
 | Talep Q5 (büyük) | 5.368 | 7.69 | −0.66 | 78.3 | |
 
+![Segment bazlı hata](figs/segment_hata.png)
+
 **Hipotez testi — kapalı günler.** İlk hipotez, kapalı günlerin metrikleri
 bozduğuydu. Test edildi, büyük ölçüde çürütüldü: model kapalı günde 0 tahmin
 ediyor, sMAPE değişmiyor (8.34). Yalnız 3 mağaza (292, 876, 909) %35'ten fazla
