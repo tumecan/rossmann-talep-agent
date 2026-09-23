@@ -1,0 +1,27 @@
+# --- LLM agent / RAG ---
+langchain
+langchain-openai
+langchain-chroma
+langchain-text-splitters
+openai
+rank-bm25
+
+# --- API servisi ---
+fastapi
+uvicorn
+pydantic
+python-dotenv
+requests
+
+# --- Veri / model ---
+pandas
+numpy
+scikit-learn
+xgboost
+tensorflow
+keras-tuner
+prophet
+optuna
+
+# --- Gorsellestirme ---
+matplotlib

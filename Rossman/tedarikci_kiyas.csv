@@ -1,0 +1,9 @@
+﻿tedarikci,politika,fire_birim,stoksuz_birim,firsat_maliyeti,satinalma,ciro,net_kar,ort_stok,siparis_sayisi
+Schnellware,ortalama,536.8,125.8,251.6,27000.0,30619.2,4434.7,198.0,9
+Schnellware,newsvendor,456.8,545.8,1091.6,24000.0,27260.0,4075.5,175.5,8
+Nordmann,ortalama,4209.8,1930.5,3861.0,33480.0,16182.4,-18692.6,434.2,4
+Nordmann,newsvendor,4209.8,1930.5,3861.0,33480.0,16182.4,-18692.6,434.2,4
+ExpressLog,ortalama,0.0,0.0,0.0,25536.0,31627.2,5173.5,90.0,19
+ExpressLog,newsvendor,0.0,23.3,46.6,25536.0,31440.0,5126.1,89.6,19
+Rheinland,ortalama,1806.1,1269.7,2539.4,26460.0,21468.8,-4928.7,268.0,6
+Rheinland,newsvendor,1806.1,1269.7,2539.4,26460.0,21468.8,-4928.7,268.0,6

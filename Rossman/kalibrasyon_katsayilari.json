@@ -1,0 +1,49 @@
+{
+  "yontem": "normalize edilmis CQR",
+  "alpha": 0.2,
+  "kalibrasyon_gun": 14,
+  "kalibrasyon_gozlem": 13425,
+  "olcum_gozlem": 13420,
+  "Q": 0.0065,
+  "olcum_once": {
+    "n": 13420,
+    "kapsama": 75.28,
+    "p10_alti": 8.85,
+    "p90_ustu": 15.87,
+    "ort_bant_eur": 1683.0,
+    "kupiec_lr": 177.39,
+    "kupiec_red": true
+  },
+  "olcum_sonra": {
+    "n": 13420,
+    "kapsama": 75.8,
+    "p10_alti": 8.61,
+    "p90_ustu": 15.59,
+    "ort_bant_eur": 1705.0,
+    "kupiec_lr": 141.15,
+    "kupiec_red": true
+  },
+  "segment_Q": [
+    {
+      "segment": "magaza_tipi=a",
+      "n": 7229,
+      "Q": 0.024
+    },
+    {
+      "segment": "magaza_tipi=b",
+      "n": 238,
+      "Q": -0.071
+    },
+    {
+      "segment": "magaza_tipi=c",
+      "n": 1776,
+      "Q": 0.013
+    },
+    {
+      "segment": "magaza_tipi=d",
+      "n": 4182,
+      "Q": -0.019
+    }
+  ],
+  "not": "Test penceresi ikiye bolunerek kalibre edildi; uretimde ayri bir validasyon donemi kullanilmalidir."
+}

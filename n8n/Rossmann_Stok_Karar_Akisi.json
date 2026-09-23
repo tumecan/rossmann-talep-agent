@@ -1,0 +1,2943 @@
+{
+  "name": "Rossmann Stok Karar Akisi",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stok-karar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "707661da-b12b-42cd-b49f-6cb9ca97e0f7",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2608,
+        560
+      ],
+      "webhookId": "b1000000-0000-4000-8000-000000000001"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen payload'i dogrula ve normalize et.\n// Agent ciktisina korumasiz guvenmiyoruz: eksik alan veya bilinmeyen\n// karar gelirse akis hata dalina gider, sessizce devam etmez.\n// ONAY KURALI BURADA YOK: onay_gerekli_mi tek yerde, karar_tool.py'de\n// uretilir; n8n yalniz dogrular ve yonlendirir.\nconst ZORUNLU = ['tarih', 'karar', 'aciliyet'];\nconst GECERLI_KARARLAR = ['siparis_ver', 'bekle', 'indirim_uygula', 'insana_sor'];\n\nconst cikti = [];\nfor (const item of $input.all()) {\n  const g = item.json.body ?? item.json;\n\n  const eksik = ZORUNLU.filter(a => g[a] === undefined || g[a] === null || g[a] === '');\n  let hata = null;\n  if (eksik.length > 0) {\n    hata = 'Eksik alan: ' + eksik.join(', ');\n  } else if (!GECERLI_KARARLAR.includes(g.karar)) {\n    hata = 'Bilinmeyen karar degeri: ' + g.karar;\n  }\n\n  cikti.push({ json: {\n    ...g,\n    gecerli: hata === null,\n    hata_mesaji: hata,\n    onay_gerekli_mi: Boolean(g.onay_gerekli_mi),\n    onay_sebebi: g.onay_sebebi ?? '',\n    alindi: new Date().toISOString()\n  }});\n}\nreturn cikti;"
+      },
+      "id": "e19b2ab5-bf55-446a-8515-4c185b7c4eef",
+      "name": "Karar Dogrula",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2368,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-gecerli",
+              "leftValue": "={{ $json.gecerli }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b9ff6528-ddf1-4eaa-b1c6-84d6ac807c92",
+      "name": "Gecerli mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2176,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "kanal",
+              "value": "hata",
+              "type": "string"
+            },
+            {
+              "id": "s2",
+              "name": "durum",
+              "value": "reddedildi",
+              "type": "string"
+            },
+            {
+              "id": "s3",
+              "name": "baslik",
+              "value": "=HATA — Gecersiz karar payload'i ({{ $json.tarih || 'tarih yok' }})",
+              "type": "string"
+            },
+            {
+              "id": "s4",
+              "name": "mesaj",
+              "value": "=Akis durduruldu. Sebep: {{ $json.hata_mesaji }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "fe0cb92f-82cb-4863-8a87-5d7ac80ca647",
+      "name": "Hata Yaniti",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1904,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r1",
+                    "leftValue": "={{ $json.karar }}",
+                    "rightValue": "siparis_ver",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "siparis_ver"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r2",
+                    "leftValue": "={{ $json.karar }}",
+                    "rightValue": "indirim_uygula",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "indirim_uygula"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r3",
+                    "leftValue": "={{ $json.karar }}",
+                    "rightValue": "bekle",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "bekle"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r4",
+                    "leftValue": "={{ $json.karar }}",
+                    "rightValue": "insana_sor",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "insana_sor"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "bilinmeyen"
+        }
+      },
+      "id": "1315befe-ab27-4a05-a6b8-e6169772dc88",
+      "name": "Karar Yonlendir",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1600,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-onay",
+              "leftValue": "={{ $json.onay_gerekli_mi }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4464aab5-6675-415e-a006-9885fd93f4dc",
+      "name": "Siparis Onay Gerekli mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1344,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "o1",
+              "name": "kanal",
+              "value": "eskalasyon",
+              "type": "string"
+            },
+            {
+              "id": "o2",
+              "name": "durum",
+              "value": "onay_bekliyor",
+              "type": "string"
+            },
+            {
+              "id": "o3",
+              "name": "baslik",
+              "value": "=ONAY GEREKLI — Magaza {{ $json.magaza }} / {{ $json.tarih }} siparis {{ $json.miktar }} adet",
+              "type": "string"
+            },
+            {
+              "id": "o4",
+              "name": "mesaj",
+              "value": "=Magaza {{ $json.magaza }} / taze kategori\nTedarikci: {{ $json.tedarikci }}\nMiktar: {{ $json.miktar }} adet\nTeslim: {{ $json.teslim_suresi_gun ?? '-' }} gun, varis {{ $json.varis_tarihi ?? '-' }}\nAciliyet: {{ $json.aciliyet }}\n\nGerekce: {{ $json.gerekce }}\n\nOnay sebebi: {{ $json.onay_sebebi }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "982e504f-1603-4d9d-b441-e318d64b1359",
+      "name": "Siparis Eskalasyon",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "kanal",
+              "value": "tedarikci_siparis",
+              "type": "string"
+            },
+            {
+              "id": "p2",
+              "name": "durum",
+              "value": "otomatik_gonderildi",
+              "type": "string"
+            },
+            {
+              "id": "p3",
+              "name": "baslik",
+              "value": "=SIPARIS — Magaza {{ $json.magaza }} / {{ $json.tarih }} / {{ $json.miktar }} adet",
+              "type": "string"
+            },
+            {
+              "id": "p4",
+              "name": "mesaj",
+              "value": "=Magaza {{ $json.magaza }} / taze kategori\nTedarikci: {{ $json.tedarikci }}\nMiktar: {{ $json.miktar }} adet\nTeslim: {{ $json.teslim_suresi_gun ?? '-' }} gun, varis {{ $json.varis_tarihi ?? '-' }}\nAciliyet: {{ $json.aciliyet }}\n\nGerekce: {{ $json.gerekce }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "16cf68de-28b9-4d5d-a336-3d5ae95e8b7e",
+      "name": "Otomatik Siparis",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-ind",
+              "leftValue": "={{ $json.onay_gerekli_mi }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "249db4fb-eb06-4e7e-b9fe-bf480830abab",
+      "name": "Indirim Onay Gerekli mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1344,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "q1",
+              "name": "kanal",
+              "value": "eskalasyon",
+              "type": "string"
+            },
+            {
+              "id": "q2",
+              "name": "durum",
+              "value": "onay_bekliyor",
+              "type": "string"
+            },
+            {
+              "id": "q3",
+              "name": "baslik",
+              "value": "=ONAY GEREKLI — {{ $json.tarih }} indirim %{{ ($json.indirim_orani * 100).toFixed(0) }}",
+              "type": "string"
+            },
+            {
+              "id": "q4",
+              "name": "mesaj",
+              "value": "=Magaza {{ $json.magaza }} / taze kategori\nIndirim orani: %{{ ($json.indirim_orani * 100).toFixed(0) }}\nFire riski: {{ $json.fire_riski_birim }} birim\nTahmini net etki: {{ $json.net_etki_eur }} EUR\nKalan raf omru: {{ $json.kalan_raf_omru }} gun\n\nGerekce: {{ $json.gerekce }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "d3e66a3a-5ace-4751-b1fe-c4f2fdd43ddd",
+      "name": "Indirim Onaya",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "w1",
+              "name": "kanal",
+              "value": "magaza_bildirim",
+              "type": "string"
+            },
+            {
+              "id": "w2",
+              "name": "durum",
+              "value": "otomatik_uygulandi",
+              "type": "string"
+            },
+            {
+              "id": "w3",
+              "name": "baslik",
+              "value": "=INDIRIM — {{ $json.tarih }} %{{ ($json.indirim_orani * 100).toFixed(0) }}",
+              "type": "string"
+            },
+            {
+              "id": "w4",
+              "name": "mesaj",
+              "value": "=Magaza {{ $json.magaza }} / taze kategori\nIndirim orani: %{{ ($json.indirim_orani * 100).toFixed(0) }}\nFire riski: {{ $json.fire_riski_birim }} birim\nNet etki: {{ $json.net_etki_eur }} EUR\nKalan raf omru: {{ $json.kalan_raf_omru }} gun\n\nGerekce: {{ $json.gerekce }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "582b586e-0377-4386-84b6-ef0c82cec6ae",
+      "name": "Otomatik Indirim",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "kanal",
+              "value": "log",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "durum",
+              "value": "aksiyon_yok",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "baslik",
+              "value": "=BEKLE — {{ $json.tarih }}",
+              "type": "string"
+            },
+            {
+              "id": "b4",
+              "name": "mesaj",
+              "value": "=Aksiyon gerekmedi. Stok {{ $json.mevcut_stok }} adet, fire {{ $json.fire_riski_birim }} birim (esik alti).\nGerekce: {{ $json.gerekce }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "536e5de4-4726-4358-b961-1d35e566169c",
+      "name": "Bekle Log",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1344,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "i1",
+              "name": "kanal",
+              "value": "eskalasyon",
+              "type": "string"
+            },
+            {
+              "id": "i2",
+              "name": "durum",
+              "value": "onay_bekliyor",
+              "type": "string"
+            },
+            {
+              "id": "i3",
+              "name": "baslik",
+              "value": "=INSAN KARARI GEREKLI — Magaza {{ $json.magaza }} / {{ $json.tarih }}",
+              "type": "string"
+            },
+            {
+              "id": "i4",
+              "name": "mesaj",
+              "value": "=Sebep: {{ $json.onay_sebebi || 'belirtilmedi' }}\n{{ $json.onerilen_aksiyon ? 'Onerilen aksiyon: ' + $json.onerilen_aksiyon : '' }}\nTahmin: {{ $json.tahmin_satis }} adet (aralik {{ $json.guven_alt }} - {{ $json.guven_ust }})\nStok: {{ $json.mevcut_stok }} adet\n\nGerekce: {{ $json.gerekce }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "7488958e-eb2e-44b1-bd8b-b12e3cf30f6f",
+      "name": "Insan Onayi",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1344,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "x1",
+              "name": "kanal",
+              "value": "hata",
+              "type": "string"
+            },
+            {
+              "id": "x2",
+              "name": "durum",
+              "value": "yonlendirilemedi",
+              "type": "string"
+            },
+            {
+              "id": "x3",
+              "name": "baslik",
+              "value": "=HATA — Bilinmeyen karar tipi ({{ $json.tarih }})",
+              "type": "string"
+            },
+            {
+              "id": "x4",
+              "name": "mesaj",
+              "value": "=Switch hicbir dala uymadi. Gelen karar: {{ $json.karar }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "e534388c-4798-4b7c-abc9-902c92bafef0",
+      "name": "Bilinmeyen Karar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1344,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "<TELEGRAM_CHAT_ID>",
+        "text": "=🔴 {{ $json.baslik }}\n\n{{ $json.mesaj }}\n\n<i>Karar no: {{ $json.karar_id }}</i>",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Onayla",
+                    "additionalFields": {
+                      "callback_data": "=ok:{{ $json.karar_id }}"
+                    }
+                  },
+                  {
+                    "text": "❌ Reddet",
+                    "additionalFields": {
+                      "callback_data": "=no:{{ $json.karar_id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "4f215e0f-1968-4140-9f15-236ca993b062",
+      "name": "Telegram Onay Bildirimi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        192
+      ],
+      "retryOnFail": true,
+      "webhookId": "549ba0da-0d1c-4669-811d-c761736d5eb5",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "<TELEGRAM_CHAT_ID>",
+        "text": "=✅ {{ $json.baslik }}\n\n{{ $json.mesaj }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "188a4aeb-19af-4083-90d6-2e7079f9d88c",
+      "name": "Telegram Aksiyon Bildirimi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        400
+      ],
+      "retryOnFail": true,
+      "webhookId": "2a6fa220-39a8-42e6-93ad-a5de3bce7b5e",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "<TELEGRAM_CHAT_ID>",
+        "text": "=⚠️ {{ $json.baslik }}\n\n{{ $json.mesaj }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "04219538-06f8-4fc2-936f-d0b630fa6349",
+      "name": "Telegram Hata Bildirimi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        800
+      ],
+      "retryOnFail": true,
+      "webhookId": "7db14482-1c9d-4457-a950-1ad58606978a",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ tarih: $('Karar Dogrula').first().json.tarih, karar: $('Karar Dogrula').first().json.karar, magaza: $('Karar Dogrula').first().json.magaza, gecerli: $('Karar Dogrula').first().json.gecerli, hata: $('Karar Dogrula').first().json.hata_mesaji }) }}",
+        "options": {}
+      },
+      "id": "a536c3df-d28d-4471-aebe-b2755c22c6af",
+      "name": "Yanit",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -528,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/<GOOGLE_SHEET_ID>/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sayfa1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tarih": "={{ $json.tarih }}",
+            "karar": "={{ $json.karar }}",
+            "miktar": "={{ $json.miktar }}",
+            "tedarikci": "={{ $json.tedarikci }}",
+            "net_etki_eur": "={{ $json.net_etki_eur }}",
+            "aciliyet": "={{ $json.aciliyet }}",
+            "onay_gerekli": "={{ $json.onay_gerekli_mi }}",
+            "gerekce": "={{ $json.gerekce }}",
+            "stok": "={{ $json.mevcut_stok }}",
+            "magaza": "={{ $json.magaza }}",
+            "indirim oranı": "={{ $json.indirim_orani }}",
+            "model_smape_test": "={{ $json.model_smape_test }}",
+            "onay_sebebi": "={{ $json.onay_sebebi }}",
+            "tool_zinciri": "={{ $json.tool_zinciri }}",
+            "guven bandı": "={{ $json.guven_bandi }}",
+            "karar_id": "={{ $json.karar_id }}",
+            "onerilen_aksiyon": "={{ $json.onerilen_aksiyon }}",
+            "durum": "={{ $json.onay_gerekli_mi ? 'onay_bekliyor' : 'otomatik' }}",
+            "onay_zamani": "",
+            "red_sebebi": ""
+          },
+          "matchingColumns": [
+            "karar_id"
+          ],
+          "schema": [
+            {
+              "id": "tarih",
+              "displayName": "tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar",
+              "displayName": "karar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "miktar",
+              "displayName": "miktar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tedarikci",
+              "displayName": "tedarikci",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "net_etki_eur",
+              "displayName": "net_etki_eur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_gerekli",
+              "displayName": "onay_gerekli",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aciliyet",
+              "displayName": "aciliyet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "gerekce",
+              "displayName": "gerekce",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stok",
+              "displayName": "stok",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "magaza",
+              "displayName": "magaza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "indirim oranı",
+              "displayName": "indirim oranı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_smape_test",
+              "displayName": "model_smape_test",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_sebebi",
+              "displayName": "onay_sebebi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tool_zinciri",
+              "displayName": "tool_zinciri",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "guven bandı",
+              "displayName": "guven bandı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onerilen_aksiyon",
+              "displayName": "onerilen_aksiyon",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar_id",
+              "displayName": "karar_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "durum",
+              "displayName": "durum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_zamani",
+              "displayName": "onay_zamani",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "red_sebebi",
+              "displayName": "red_sebebi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a7ca6a76-9334-4454-a813-0223cb9fe2bd",
+      "name": "Karar Defterine Yaz",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1856,
+        368
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "1r1DHWtSYizgB11m",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "ef7d302e-28b5-41db-96fc-b5af3619f9d2",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3328,
+        352
+      ],
+      "webhookId": "ec4062e4-aeb0-4e6d-9fea-3e092f05519e",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/soru",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ soru: $json.message.text, chat_id: String($json.message.chat.id) }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "3902847f-1b30-4b0d-83cd-c95f3a1df9d9",
+      "name": "FastAPI Soru",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3136,
+        352
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-karar-var",
+              "leftValue": "={{ $json.karar_var_mi }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "12a1e6db-8de0-4091-98d4-c2873ca061b3",
+      "name": "Karar Uretildi mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2944,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Telegram girisi icin koprü node.\n// FastAPI yaniti {cevap, tool_isimleri, karar:{...}} seklinde IC ICEDIR.\n// Karar Dogrula ise DUZ bir nesne bekler (webhook payload'i gibi). Burada\n// karar nesnesi duzlestirilir ve izlenebilirlik alanlari eklenir. Boylece\n// webhook ve Telegram girisleri AYNI karar hattini besler.\nconst cikti = [];\nfor (const item of $input.all()) {\n  const y = item.json;\n  const k = y.karar || {};\n  cikti.push({ json: {\n    ...k,\n    tool_zinciri: (y.tool_isimleri || []).join(' -> '),\n    tool_sayisi: y.tool_sayisi ?? 0,\n    agent_cevabi: y.cevap || '',\n    kaynak: 'telegram',\n    chat_id: String($('Telegram Trigger').first().json.message.chat.id),\n  }});\n}\nreturn cikti;"
+      },
+      "id": "f88b56f5-3222-4e34-b355-0d959a9025a8",
+      "name": "Karar Ayikla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2752,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ String($json.cevap || '⚠️ Asistan servisine su an ulasilamiyor. Lutfen biraz sonra tekrar deneyin.').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "04f9343e-25ee-4d61-ba27-5d5684982a29",
+      "name": "Telegram Duz Cevap",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2752,
+        480
+      ],
+      "webhookId": "4576ad94-5c98-44fd-9ace-c9886e6166ed",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-kaynak",
+              "leftValue": "={{ $('Karar Dogrula').first().json.kaynak }}",
+              "rightValue": "telegram",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7ce8bb8a-f6a8-4256-ac14-e86c2e0814b6",
+      "name": "Webhook Kosusu mu?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -736,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/<GOOGLE_SHEET_ID>/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sohbet Kaydi",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "zaman": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "soru": "={{ $('Telegram Trigger').item.json.message.text }}",
+            "cevap": "={{ $('FastAPI Soru').item.json.cevap }}",
+            "tool_sayisi": "={{ $('FastAPI Soru').item.json.tool_sayisi }}",
+            "tool_zinciri": "={{ $('FastAPI Soru').item.json.tool_isimleri.join(' -> ') }}",
+            "karar_var_mi": "={{ $json.karar_var_mi }}",
+            "karar_ozeti": "={{ $json.karar ? $json.karar.karar + ' / magaza ' + $json.karar.magaza + ' / ' + $json.karar.tarih : '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "zaman",
+              "displayName": "zaman",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "soru",
+              "displayName": "soru",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cevap",
+              "displayName": "cevap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tool_sayisi",
+              "displayName": "tool_sayisi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tool_zinciri",
+              "displayName": "tool_zinciri",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar_var_mi",
+              "displayName": "karar_var_mi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar_ozeti",
+              "displayName": "karar_ozeti",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "cf4cece6-51d5-4deb-a7e4-b6dd448011d9",
+      "name": "Sohbet Kaydi",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2944,
+        608
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "1r1DHWtSYizgB11m",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "g1",
+                    "leftValue": "={{ $json.callback_query ? 'buton' : 'mesaj' }}",
+                    "rightValue": "mesaj",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mesaj"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "g2",
+                    "leftValue": "={{ $json.callback_query ? 'buton' : 'mesaj' }}",
+                    "rightValue": "buton",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "buton"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b697e6b-e534-4734-b17b-078d17c0d99b",
+      "name": "Giris Tipi?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -3696,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Buton basmasini (callback_query) ayristirir.\n// callback_data bicimleri — Telegram 64 bayt sinir koyar, kisa tutuldu:\n//   ok:<karar_id>              -> onay\n//   no:<karar_id>              -> red, once sebep sorulacak\n//   rs:<sebep_kodu>:<karar_id> -> red sebebi secildi\nconst cikti = [];\nfor (const item of $input.all()) {\n  const cq = item.json.callback_query || {};\n  const veri = String(cq.data || '');\n  const parca = veri.split(':');\n  const tip = parca[0];\n\n  let aksiyon = 'bilinmeyen', karar_id = '', sebep_kodu = null;\n  if (tip === 'ok')      { aksiyon = 'onay';       karar_id = parca[1] || ''; }\n  else if (tip === 'no') { aksiyon = 'sebep_sor';  karar_id = parca[1] || ''; }\n  else if (tip === 'rs') { aksiyon = 'red';        sebep_kodu = parca[1] || 'diger';\n                           karar_id = parca[2] || ''; }\n\n  cikti.push({ json: {\n    aksiyon, karar_id, sebep_kodu,\n    callback_id: cq.id,\n    chat_id: String(cq.message?.chat?.id || ''),\n    message_id: cq.message?.message_id,\n    kullanici: cq.from?.username || cq.from?.first_name || 'bilinmeyen',\n  }});\n}\nreturn cikti;"
+      },
+      "id": "7032f649-e7fc-4a8f-b46b-ddc992d8b7ae",
+      "name": "Callback Ayikla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3504,
+        1376
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.callback_id }}",
+        "additionalFields": {}
+      },
+      "id": "a0c35bfb-ce4b-4895-941a-1f3cc06dcbb8",
+      "name": "Butona Yanit Ver",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3312,
+        1552
+      ],
+      "webhookId": "e1000000-0000-4000-8000-000000000103",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "k1",
+                    "leftValue": "={{ $json.aksiyon }}",
+                    "rightValue": "onay",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "onay"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "k2",
+                    "leftValue": "={{ $json.aksiyon }}",
+                    "rightValue": "sebep_sor",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "sebep_sor"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "k3",
+                    "leftValue": "={{ $json.aksiyon }}",
+                    "rightValue": "red",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "red"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "bilinmeyen"
+        }
+      },
+      "id": "3e6ac126-bad7-4123-89e5-97c6eaac0f8d",
+      "name": "Callback Yonlendir",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -3120,
+        1376
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=Karar <b>{{ $json.karar_id }}</b> reddediliyor.\nSebebi nedir?",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Tahmin gercekci degil",
+                    "additionalFields": {
+                      "callback_data": "=rs:model:{{ $json.karar_id }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Miktar/oran yanlis",
+                    "additionalFields": {
+                      "callback_data": "=rs:parametre:{{ $json.karar_id }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Zamanlama uygun degil",
+                    "additionalFields": {
+                      "callback_data": "=rs:zamanlama:{{ $json.karar_id }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Baska sebep",
+                    "additionalFields": {
+                      "callback_data": "=rs:diger:{{ $json.karar_id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "72f6527e-54a9-4b66-881f-9d58464f1a6d",
+      "name": "Telegram Sebep Sor",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2880,
+        1472
+      ],
+      "webhookId": "e1000000-0000-4000-8000-000000000105",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/onay",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ karar_id: $json.karar_id, durum: 'onaylandi', sebep_kodu: $json.sebep_kodu, chat_id: $json.chat_id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "fe4c450d-d0f5-4695-883d-62e88b964d5f",
+      "name": "Onay Kaydet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2880,
+        1248
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/onay",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ karar_id: $json.karar_id, durum: 'reddedildi', sebep_kodu: $json.sebep_kodu, chat_id: $json.chat_id }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "0a64c0f7-e728-46cf-a2ce-6d4c939e04d3",
+      "name": "Red Kaydet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2880,
+        1664
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/<GOOGLE_SHEET_ID>/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sayfa1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "karar_id": "={{ $('Callback Ayikla').item.json.karar_id }}",
+            "durum": "onaylandi",
+            "onay_zamani": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+            "red_sebebi": ""
+          },
+          "matchingColumns": [
+            "karar_id"
+          ],
+          "schema": [
+            {
+              "id": "tarih",
+              "displayName": "tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar",
+              "displayName": "karar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "miktar",
+              "displayName": "miktar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tedarikci",
+              "displayName": "tedarikci",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "net_etki_eur",
+              "displayName": "net_etki_eur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_gerekli",
+              "displayName": "onay_gerekli",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aciliyet",
+              "displayName": "aciliyet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "gerekce",
+              "displayName": "gerekce",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stok",
+              "displayName": "stok",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "magaza",
+              "displayName": "magaza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "indirim oranı",
+              "displayName": "indirim oranı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_smape_test",
+              "displayName": "model_smape_test",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_sebebi",
+              "displayName": "onay_sebebi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tool_zinciri",
+              "displayName": "tool_zinciri",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "guven bandı",
+              "displayName": "guven bandı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onerilen_aksiyon",
+              "displayName": "onerilen_aksiyon",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar_id",
+              "displayName": "karar_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "durum",
+              "displayName": "durum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_zamani",
+              "displayName": "onay_zamani",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "red_sebebi",
+              "displayName": "red_sebebi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "4de3ed66-10bb-452e-a5d2-a1a019b30e8f",
+      "name": "Sheets Onay Guncelle",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2640,
+        1248
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "1r1DHWtSYizgB11m",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/<GOOGLE_SHEET_ID>/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sayfa1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "karar_id": "={{ $('Callback Ayikla').item.json.karar_id }}",
+            "durum": "reddedildi",
+            "onay_zamani": "={{ $now.format('yyyy-MM-dd HH:mm:ss') }}",
+            "red_sebebi": "={{ $json.sebep || '' }}"
+          },
+          "matchingColumns": [
+            "karar_id"
+          ],
+          "schema": [
+            {
+              "id": "tarih",
+              "displayName": "tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar",
+              "displayName": "karar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "miktar",
+              "displayName": "miktar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tedarikci",
+              "displayName": "tedarikci",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "net_etki_eur",
+              "displayName": "net_etki_eur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_gerekli",
+              "displayName": "onay_gerekli",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "aciliyet",
+              "displayName": "aciliyet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "gerekce",
+              "displayName": "gerekce",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stok",
+              "displayName": "stok",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "magaza",
+              "displayName": "magaza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "indirim oranı",
+              "displayName": "indirim oranı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_smape_test",
+              "displayName": "model_smape_test",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_sebebi",
+              "displayName": "onay_sebebi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tool_zinciri",
+              "displayName": "tool_zinciri",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "guven bandı",
+              "displayName": "guven bandı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onerilen_aksiyon",
+              "displayName": "onerilen_aksiyon",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "karar_id",
+              "displayName": "karar_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "durum",
+              "displayName": "durum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_zamani",
+              "displayName": "onay_zamani",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "red_sebebi",
+              "displayName": "red_sebebi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6497934e-163a-4e6f-a1a5-0f2fc9e3937b",
+      "name": "Sheets Red Guncelle",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2640,
+        1664
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "1r1DHWtSYizgB11m",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Callback Ayikla').item.json.chat_id }}",
+        "text": "=✅ Karar <b>{{ $('Callback Ayikla').item.json.karar_id }}</b> ONAYLANDI.\n{{ $('Onay Kaydet').item.json.mesaj }}\n\n<i>Onaylayan: {{ $('Callback Ayikla').item.json.kullanici }}</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "3fcf088a-58cc-44f3-9bed-251af3761bb3",
+      "name": "Telegram Onay Sonuc",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2400,
+        1248
+      ],
+      "webhookId": "e1000000-0000-4000-8000-000000000110",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Callback Ayikla').item.json.chat_id }}",
+        "text": "=❌ Karar <b>{{ $('Callback Ayikla').item.json.karar_id }}</b> REDDEDILDI.\nSebep: {{ $('Red Kaydet').item.json.sebep }}\n\n<i>Reddeden: {{ $('Callback Ayikla').item.json.kullanici }}</i>\nBu sebep ogrenme dongusune kaydedildi.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "a0c52066-aaba-46dd-b141-2c8649a821ce",
+      "name": "Telegram Red Sonuc",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2400,
+        1664
+      ],
+      "webhookId": "e1000000-0000-4000-8000-000000000111",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "2e1be1c4-bad0-4bcc-be51-9df3e0ca8c60",
+      "name": "Her Sabah 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1888,
+        1456
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/gunluk-rapor",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "d3f1cc88-0361-417b-9115-26a34ebcc2b1",
+      "name": "Gunluk Rapor Al",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1664,
+        1456
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/<GOOGLE_SHEET_ID>/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Ogrenme Gecmisi",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tarih": "={{ $json.gecmis.tarih }}",
+            "son_hafta_smape": "={{ $json.gecmis.son_hafta_smape }}",
+            "son_hafta_kapsama": "={{ $json.gecmis.son_hafta_kapsama }}",
+            "son_hafta_p90_ustu": "={{ $json.gecmis.son_hafta_p90_ustu }}",
+            "onay_yuku": "={{ $json.gecmis.onay_yuku }}",
+            "kacirilan_eur": "={{ $json.gecmis.kacirilan_eur }}",
+            "insan_karar": "={{ $json.gecmis.insan_karar }}",
+            "insan_onay_orani": "={{ $json.gecmis.insan_onay_orani }}",
+            "oneri_sayisi": "={{ $json.gecmis.oneri_sayisi }}",
+            "alarm_sayisi": "={{ $json.gecmis.alarm_sayisi }}",
+            "alarmlar": "={{ $json.gecmis.alarmlar }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tarih",
+              "displayName": "tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "son_hafta_smape",
+              "displayName": "son_hafta_smape",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "son_hafta_kapsama",
+              "displayName": "son_hafta_kapsama",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "son_hafta_p90_ustu",
+              "displayName": "son_hafta_p90_ustu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onay_yuku",
+              "displayName": "onay_yuku",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kacirilan_eur",
+              "displayName": "kacirilan_eur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "insan_karar",
+              "displayName": "insan_karar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "insan_onay_orani",
+              "displayName": "insan_onay_orani",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "oneri_sayisi",
+              "displayName": "oneri_sayisi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alarm_sayisi",
+              "displayName": "alarm_sayisi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alarmlar",
+              "displayName": "alarmlar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ef8006c-4d5e-4a4e-b506-322ed3e6e3ef",
+      "name": "Ogrenme Gecmisine Yaz",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1456,
+        1632
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "1r1DHWtSYizgB11m",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-alarm-var",
+              "leftValue": "={{ $json.alarm }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "43e74253-a52b-47c0-96bf-17afe65d163e",
+      "name": "Alarm Var mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1456,
+        1408
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "<TELEGRAM_CHAT_ID>",
+        "text": "={{ $json.mesaj }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ccc88f66-ff3e-4ed2-9e79-9231d9927ec4",
+      "name": "Telegram Drift Alarmi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1216,
+        1312
+      ],
+      "webhookId": "f0000000-0000-4000-8000-000000000215",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "<TELEGRAM_CHAT_ID>",
+        "text": "={{ $json.mesaj }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": true
+        }
+      },
+      "id": "d974de08-4bd5-4940-a65e-07e87f005a77",
+      "name": "Telegram Sessiz Ozet",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1216,
+        1488
+      ],
+      "webhookId": "f0000000-0000-4000-8000-000000000216",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c-tg-kaynak",
+              "leftValue": "={{ $json.kaynak }}",
+              "rightValue": "telegram",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b56b22b6-4ddc-42b6-8395-ac1a728af62b",
+      "name": "Telegram Kaynakli mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1104,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=ℹ️ Mağaza {{ $json.magaza }}, {{ Number($json.tarih.slice(8, 10)) }} {{ ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'][Number($json.tarih.slice(5, 7)) - 1] }}: aksiyon gerekmiyor (bekle)\n\n{{ String($json.gerekce || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "4d1984c8-7065-4c10-bc45-17d6a508a4d4",
+      "name": "Telegram Bekle Bildirimi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        640
+      ],
+      "retryOnFail": true,
+      "webhookId": "d218656e-319c-4115-874e-438b1447c388",
+      "credentials": {
+        "telegramApi": {
+          "id": "FmV957J2it5ySe6P",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Karar Dogrula",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Karar Dogrula": {
+      "main": [
+        [
+          {
+            "node": "Gecerli mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gecerli mi?": {
+      "main": [
+        [
+          {
+            "node": "Karar Defterine Yaz",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Karar Yonlendir",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Hata Yaniti",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Karar Yonlendir": {
+      "main": [
+        [
+          {
+            "node": "Siparis Onay Gerekli mi?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Indirim Onay Gerekli mi?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bekle Log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insan Onayi",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bilinmeyen Karar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Siparis Onay Gerekli mi?": {
+      "main": [
+        [
+          {
+            "node": "Siparis Eskalasyon",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Otomatik Siparis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Indirim Onay Gerekli mi?": {
+      "main": [
+        [
+          {
+            "node": "Indirim Onaya",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Otomatik Indirim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Siparis Eskalasyon": {
+      "main": [
+        [
+          {
+            "node": "Telegram Onay Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Indirim Onaya": {
+      "main": [
+        [
+          {
+            "node": "Telegram Onay Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insan Onayi": {
+      "main": [
+        [
+          {
+            "node": "Telegram Onay Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Otomatik Siparis": {
+      "main": [
+        [
+          {
+            "node": "Telegram Aksiyon Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Otomatik Indirim": {
+      "main": [
+        [
+          {
+            "node": "Telegram Aksiyon Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hata Yaniti": {
+      "main": [
+        [
+          {
+            "node": "Telegram Hata Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bilinmeyen Karar": {
+      "main": [
+        [
+          {
+            "node": "Telegram Hata Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bekle Log": {
+      "main": [
+        [
+          {
+            "node": "Webhook Kosusu mu?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Kaynakli mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Onay Bildirimi": {
+      "main": [
+        [
+          {
+            "node": "Webhook Kosusu mu?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Aksiyon Bildirimi": {
+      "main": [
+        [
+          {
+            "node": "Webhook Kosusu mu?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Hata Bildirimi": {
+      "main": [
+        [
+          {
+            "node": "Webhook Kosusu mu?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Giris Tipi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FastAPI Soru": {
+      "main": [
+        [
+          {
+            "node": "Sohbet Kaydi",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Karar Uretildi mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Karar Uretildi mi?": {
+      "main": [
+        [
+          {
+            "node": "Karar Ayikla",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Duz Cevap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Karar Ayikla": {
+      "main": [
+        [
+          {
+            "node": "Karar Dogrula",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Kosusu mu?": {
+      "main": [
+        [
+          {
+            "node": "Yanit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Giris Tipi?": {
+      "main": [
+        [
+          {
+            "node": "FastAPI Soru",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Callback Ayikla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Ayikla": {
+      "main": [
+        [
+          {
+            "node": "Butona Yanit Ver",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Callback Yonlendir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Yonlendir": {
+      "main": [
+        [
+          {
+            "node": "Onay Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Sebep Sor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Red Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onay Kaydet": {
+      "main": [
+        [
+          {
+            "node": "Sheets Onay Guncelle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets Onay Guncelle": {
+      "main": [
+        [
+          {
+            "node": "Telegram Onay Sonuc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Red Kaydet": {
+      "main": [
+        [
+          {
+            "node": "Sheets Red Guncelle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets Red Guncelle": {
+      "main": [
+        [
+          {
+            "node": "Telegram Red Sonuc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Her Sabah 09:00": {
+      "main": [
+        [
+          {
+            "node": "Gunluk Rapor Al",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gunluk Rapor Al": {
+      "main": [
+        [
+          {
+            "node": "Alarm Var mi?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Ogrenme Gecmisine Yaz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alarm Var mi?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Drift Alarmi",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Sessiz Ozet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Kaynakli mi?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Bekle Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timezone": "Europe/Istanbul"
+  },
+  "versionId": "a242077e-0210-4a11-bc42-de5763de7bcd",
+  "meta": {
+    "instanceId": "0c61285d273ada5993a99cebc2ce9e70b723640c9c9dd46e60a1bbef0cae3c25"
+  },
+  "nodeGroups": [],
+  "id": "3r6gIkRQvPf2szmc",
+  "tags": []
+}

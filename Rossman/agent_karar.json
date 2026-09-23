@@ -1,0 +1,31 @@
+{
+  "zaman": "2026-09-13T16:16:39",
+  "model": "gpt-4o-mini",
+  "prompt_surum": "v2",
+  "kaynak": "prophet_forecast.csv",
+  "girdi": {
+    "magaza": 1,
+    "tarih": "2015-07-31",
+    "tahmin_satis": 4948.9,
+    "guven_alt": 3825.4,
+    "guven_ust": 5925.4,
+    "mevcut_stok": 4016.0,
+    "promo_var_mi": true
+  },
+  "hesaplanan": {
+    "belirsizlik_orani": 0.4243,
+    "belirsiz_mi": true,
+    "emniyet_stogu": 1237.2,
+    "gereken_toplam": 6186.1,
+    "ihtiyac": 2170.1,
+    "onerilen_miktar": 2150
+  },
+  "karar": {
+    "karar": "insana_sor",
+    "miktar": 2150,
+    "aciliyet": "yuksek",
+    "gerekce": "Gereken toplam 6186.1, mevcut stok 4016.0; 2170.1 birim açık var. Güven aralığı geniş olduğu için insan onayı gerekmektedir."
+  },
+  "mudahaleler": [],
+  "deneme_sayisi": 1
+}

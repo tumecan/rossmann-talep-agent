@@ -1,0 +1,2 @@
+units1,ikinci_katman,dropout1,learning_rate,units2,dropout2,tuner/epochs,tuner/initial_epoch,tuner/bracket,tuner/round,tuner/trial_id
+64,False,0.0,0.005,48,0.0,50,17,3,3,0049

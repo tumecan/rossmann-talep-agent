@@ -1,0 +1,265 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Rossmann Stok Karar Semasi",
+  "surum": "1.0",
+  "aciklama": [
+    "karar_uret tool'unun dondurdugu YAPISAL KARAR nesnesinin semasi.",
+    "Bu sema hem agent ciktisini hem n8n webhook payload'ini tanimlar;",
+    "iki giris kanali (Telegram ve webhook) ayni semayi kullanir.",
+    "MIMARI ILKE: buradaki hicbir sayi LLM tarafindan uretilmez. Tum",
+    "degerler karar_tool.py icindeki deterministik kural motorunda",
+    "hesaplanir. LLM yalnizca tool'u dogru parametreyle cagirir ve",
+    "sonucu aktarir."
+  ],
+  "type": "object",
+  "required": [
+    "olay",
+    "tarih",
+    "magaza",
+    "karar",
+    "aciliyet",
+    "gerekce"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "olay": {
+      "type": "string",
+      "const": "stok_karari",
+      "aciklama": "Sabit etiket. n8n Karar Dogrula node'u bu alanla payload tipini ayirt eder."
+    },
+    "tarih": {
+      "type": "string",
+      "format": "date",
+      "ornek": "2015-07-20",
+      "aciklama": "Kararin ait oldugu gun. Tahmin penceresi disindaysa tool hata dondurur."
+    },
+    "magaza": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1115,
+      "aciklama": "Rossmann magaza numarasi."
+    },
+    "kategori": {
+      "type": "string",
+      "const": "taze",
+      "aciklama": "Raf omru 3 gun olan bozulabilir urun grubu. Tek kategori modellendi."
+    },
+    "karar": {
+      "type": "string",
+      "enum": [
+        "siparis_ver",
+        "bekle",
+        "indirim_uygula",
+        "insana_sor"
+      ],
+      "aciklama": [
+        "Karar seti SABITTIR; bu dort deger disinda bir sey donmez.",
+        "n8n Karar Yonlendir (Switch) node'u bu alana gore dallanir;",
+        "tanimsiz bir deger gelirse fallback dali 'bilinmeyen' devreye girer.",
+        "insana_sor bir karar DEGIL, karari devretmedir: model zayifken",
+        "veya belirsizlik yuksekken otomatik aksiyon uretilmez."
+      ]
+    },
+    "aciliyet": {
+      "type": "string",
+      "enum": [
+        "kritik",
+        "yuksek",
+        "orta",
+        "dusuk"
+      ],
+      "aciklama": "Kural motorunda hesaplanir; agent'in yorumu degildir."
+    },
+    "miktar": {
+      "type": "integer",
+      "minimum": 0,
+      "aciklama": [
+        "Siparis adedi. Yalnizca karar='siparis_ver' iken sifirdan buyuktur.",
+        "Politika modundaki siparis miktari varsa o kullanilir; yoksa",
+        "p50 tahmin x emniyet esigi - acilis stok formuluyle hesaplanir."
+      ]
+    },
+    "tedarikci": {
+      "type": "string",
+      "aciklama": "Siparis kararinda magazanin atanmis tedarikcisi; diger kararlarda 'yok'."
+    },
+    "indirim_orani": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "ornek": 0.3,
+      "aciklama": [
+        "ONDALIK yazilir (0.30 = %30), yuzde olarak degil.",
+        "Yalnizca karar='indirim_uygula' iken sifirdan buyuktur.",
+        "Karar insana_sor'a cevrilirse SIFIRLANIR; onerilen deger",
+        "onerilen_aksiyon alaninda saklanir."
+      ]
+    },
+    "net_etki_eur": {
+      "type": "number",
+      "aciklama": [
+        "Kararin tahmini EUR etkisi.",
+        "siparis_ver: miktar x birim kar.",
+        "indirim_uygula: indirimle kurtarilan ciro (referans senaryo,",
+        "fazla stokun tamamen fire olmasi ve getirisinin sifir olmasidir).",
+        "VARSAYIM: erime orani = min(1, elastikiyet x oran), elastikiyet 1.5.",
+        "Gercek fiyat esneklik verisi yoktur; bu deger duyarlilik",
+        "analizine konu edilmelidir."
+      ]
+    },
+    "fire_riski_birim": {
+      "type": "number",
+      "minimum": 0,
+      "aciklama": "O gun raf omru dolan ve satilamayan stok (adet). Projeksiyondan gelir."
+    },
+    "gerekce": {
+      "type": "string",
+      "aciklama": [
+        "Karari tetikleyen kurallarin insan okunur aciklamasi, sayilarla.",
+        "LLM tarafindan yazilmaz; kural motoru uretir."
+      ]
+    },
+    "onay_gerekli_mi": {
+      "type": "boolean",
+      "aciklama": [
+        "true ise karar otomatik uygulanmaz, insan onayina gider.",
+        "n8n'de eskalasyon dalini tetikler."
+      ]
+    },
+    "onay_sebebi": {
+      "type": "string",
+      "aciklama": "Onayi tetikleyen kosullarin noktali virgulle ayrilmis listesi. Bos ise onay gerekmiyordur."
+    },
+    "onerilen_aksiyon": {
+      "type": "string",
+      "ornek": "indirim_uygula (%50 indirim)",
+      "aciklama": [
+        "Karar insana_sor'a cevrildiginde, cevrilmeden ONCE uretilmis",
+        "olan aksiyon. Defterde 'insana_sor + %50 indirim' gibi celiskili",
+        "satir olusmasini onler; oneri kaybolmaz, ayri alanda tasinir."
+      ]
+    },
+    "tahmin_satis": {
+      "type": "number",
+      "aciklama": "O gunun p50 talep tahmini (adet). Magaza kapaliysa 0."
+    },
+    "guven_alt": {
+      "type": "number",
+      "aciklama": "p10 tahmin (adet)."
+    },
+    "guven_ust": {
+      "type": "number",
+      "aciklama": "p90 tahmin (adet)."
+    },
+    "guven_bandi": {
+      "type": "number",
+      "aciklama": "guven_ust - guven_alt. Belirsizligin mutlak olcusu."
+    },
+    "belirsizlik_orani": {
+      "type": "number",
+      "aciklama": [
+        "guven_bandi / tahmin_satis. Tahmine gore normalize edilmis belirsizlik.",
+        "NOT: bant neredeyse sabitse bu oran belirsizligi degil talebin",
+        "dusuklugunu olcer. n8n Karar Dogrula node'u bu yuzden farkli bir",
+        "olcu kullanir: karar sinirinin (mevcut stok) guven bandi ICINDE",
+        "olup olmadigi."
+      ]
+    },
+    "mevcut_stok": {
+      "type": "number",
+      "aciklama": "Gun basi acilis stogu (adet)."
+    },
+    "magaza_kapali": {
+      "type": "boolean",
+      "aciklama": [
+        "Tahmin 0 ise true. Rossmann veri setinde bazi magazalar tadilat",
+        "icin haftalarca kapanir. Kapali gunde siparis veya indirim",
+        "anlamsizdir; karar insana devredilir. Bu durum 'model zayif'",
+        "durumundan AYRI ele alinir, cunku sebep farklidir."
+      ]
+    },
+    "kalan_raf_omru": {
+      "type": "integer",
+      "aciklama": "Elde duran partinin kalan raf omru (gun)."
+    },
+    "fire_gun_karsiligi": {
+      "type": "number",
+      "aciklama": [
+        "fire / tipik gunluk talep. Satinalma politikasi Madde 6.1 bu",
+        "oran uzerinden calisir; raf_omru_durumu tool'u ile ayni paydayi",
+        "kullanir ki iki arac celismesin."
+      ]
+    },
+    "stok_gun_karsiligi": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "aciklama": [
+        "acilis stok / o gunun p50 tahmini. O GUNE aittir.",
+        "Ozet tablosundaki ayni isimli alan DONEM ORTALAMASIDIR ve",
+        "gunluk kararda kullanilamaz; o deger asagida ayri tutulur.",
+        "Magaza kapaliysa tahmin 0'dir ve oran TANIMSIZDIR -> null doner.",
+        "Kucuk bir tabana bolup sahte bir buyuk sayi uretmek, o sayinin",
+        "karar defterine yazilmasi demektir; bu yuzden null tercih edildi."
+      ]
+    },
+    "stok_gun_karsiligi_donem_ort": {
+      "type": "number",
+      "aciklama": "projeksiyon_ozet.csv'den gelen donem ortalamasi. Karsilastirma icin tasinir."
+    },
+    "model_smape_test": {
+      "type": "number",
+      "aciklama": [
+        "Magazanin test setindeki sMAPE degeri (%).",
+        "UYARI: kapali gunler bu metrigi sisirir. Kapali gun orani yuksek",
+        "magazalarda yuksek sMAPE modelin zayifligini degil kapali gun",
+        "sayisini yansitabilir."
+      ]
+    },
+    "model_kapsama_test": {
+      "type": "number",
+      "aciklama": "Gercek degerin p10-p90 araliginda kalma orani (%). Ideal deger nominal %80'e yakindir."
+    },
+    "esikler": {
+      "type": "object",
+      "aciklama": [
+        "Karari ureten esikler her ciktida tasinir. Amac izlenebilirlik:",
+        "gecmis bir karar incelendiginde hangi esiklerle uretildigi bilinir,",
+        "esikler degistiginde eski kararlar yanlis yorumlanmaz."
+      ],
+      "properties": {
+        "onay_esigi_eur": {
+          "type": "number",
+          "varsayilan": 3000,
+          "aciklama": "Net etkisi bu tutari asan kararlar onaya gider."
+        },
+        "fire_oran_esigi": {
+          "type": "number",
+          "varsayilan": 0.4,
+          "aciklama": "fire/gunluk talep bu orani asarsa indirim karari uretilir."
+        },
+        "stok_gun_alt_esik": {
+          "type": "number",
+          "varsayilan": 1.5,
+          "aciklama": "Stok gun karsiligi bunun altindaysa siparis acilir."
+        },
+        "smape_belirsiz_esik": {
+          "type": "number",
+          "varsayilan": 20,
+          "aciklama": "Test sMAPE bunu asarsa karar insana devredilir."
+        }
+      }
+    }
+  },
+  "kural_motoru_sirasi": [
+    "1. KAPALI GUN: tahmin 0 ise -> insana_sor (diger tum kurallardan once)",
+    "2. FIRE: fire_gun_karsiligi > fire_oran_esigi -> indirim_uygula",
+    "3. STOKSUZLUK: p90 talepte stoksuz > 0 VEYA stok_gun < esik -> siparis_ver",
+    "4. Hicbiri yoksa -> bekle",
+    "5. BELIRSIZLIK KAPISI: model zayifsa ve karar bekle degilse -> insana_sor",
+    "6. ONAY KAPISI: esik asildiysa/politika tetiklendiyse -> onay_gerekli_mi=true",
+    "Sira onemlidir: elde bozulacak mal varken yeni siparis acmak zarari buyutur,",
+    "bu yuzden fire kontrolu stoksuzluk kontrolunden ONCE gelir."
+  ]
+}

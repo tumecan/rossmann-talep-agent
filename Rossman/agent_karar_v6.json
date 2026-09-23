@@ -1,0 +1,95 @@
+{
+  "zaman": "2026-09-13T21:51:07",
+  "model": "gpt-4o-mini",
+  "prompt_surum": "v7",
+  "mimari": "langchain create_agent (6 tool, RAG + israf analizi)",
+  "tool_trace": [
+    {
+      "tool": "tahmin_getir_taze",
+      "args": {
+        "tarih": "2015-06-26"
+      }
+    },
+    {
+      "tool": "stok_durumu_getir",
+      "args": {
+        "tarih": "2015-06-26"
+      }
+    },
+    {
+      "tool": "israf_riski_hesapla",
+      "args": {
+        "tarih": "2015-06-26"
+      }
+    },
+    {
+      "tool": "tedarikci_bilgisi_ara",
+      "args": {
+        "soru": "indirim kademeleri erime oranı raf ömrü"
+      }
+    },
+    {
+      "tool": "indirim_senaryosu_hesapla",
+      "args": {
+        "fazla_stok": 132.2,
+        "indirim_orani": 0.3,
+        "erime_orani": 0.6
+      }
+    },
+    {
+      "tool": "indirim_senaryosu_hesapla",
+      "args": {
+        "fazla_stok": 132.2,
+        "indirim_orani": 0.5,
+        "erime_orani": 0.85
+      }
+    },
+    {
+      "tool": "tedarikci_bilgisi_ara",
+      "args": {
+        "soru": "indirim onay yetkisi peş peşe iki gün kısıtı"
+      }
+    },
+    {
+      "tool": "onceki_indirim_getir",
+      "args": {
+        "tarih": "2015-06-26"
+      }
+    }
+  ],
+  "girdi": {
+    "magaza": 1,
+    "tarih": "2015-06-26",
+    "birim": "adet",
+    "tahmin_satis": 90.9,
+    "guven_alt": 65.0,
+    "guven_ust": 116.8,
+    "mevcut_stok": 245.1,
+    "kalan_raf_omru": 1,
+    "promo_var_mi": false
+  },
+  "hesaplanan": {
+    "belirsizlik_orani": 0.5699,
+    "emniyet_stogu": 13.6,
+    "gereken_toplam": 104.5,
+    "ihtiyac": -140.6,
+    "ihtiyac_alt": -166.5,
+    "ihtiyac_ust": -114.7,
+    "belirsiz_mi": false,
+    "onerilen_miktar": 0
+  },
+  "karar": {
+    "karar": "indirim_uygula",
+    "gerekce": "Fire riski var ve %50 indirim senaryosu en yüksek net etkiyi sağlıyor. Ancak, peş peşe iki gün %50 indirim uygulanamaz, bu nedenle %30 indirim uygulanacaktır. Bu durumda, %30 indirimle net etki 444.2 EUR olarak hesaplandı.",
+    "miktar": 0,
+    "tedarikci": "yok",
+    "teslimat_notu": "",
+    "onay_gerekli_mi": false,
+    "fire_riski_birim": 132.2,
+    "secilen_senaryo": "%30 indirim",
+    "indirim_orani": 0.3,
+    "tahmini_net_etki_eur": 444.2,
+    "aciliyet": "yuksek"
+  },
+  "mudahaleler": []
+}

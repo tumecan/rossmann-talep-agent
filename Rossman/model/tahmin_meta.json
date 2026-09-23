@@ -1,0 +1,57 @@
+{
+  "uretim_kaynagi": "global GRU + store embedding, 3 seed toplulugu",
+  "demo_bugun": "2015-07-03",
+  "pencere": [
+    "2015-07-04",
+    "2015-07-31"
+  ],
+  "takvim_kurali": "'bugun' = 2015-07-03; 'yarin' = 2015-07-04; pencere disi tarih sorulursa agent net hata dondurur",
+  "ufuk": 28,
+  "magaza_sayisi": 1115,
+  "senaryolar": [
+    "planli",
+    "promo_yok",
+    "promo_var"
+  ],
+  "kalibrasyon": {
+    "yapi": "B_tek_k",
+    "k_alt": 1.0511573553085327,
+    "k_ust": 1.0511573553085327,
+    "test_kapsama_sonra": 77.38126280499162
+  },
+  "adet_donusumu": {
+    "taze_pay": 0.2,
+    "birim_fiyat_eur": 8.0,
+    "formul": "adet = eur * taze_pay / birim_fiyat"
+  },
+  "kolonlar": [
+    "magaza",
+    "tarih",
+    "h",
+    "senaryo",
+    "acik",
+    "promo",
+    "okul",
+    "tatil",
+    "p10_eur",
+    "p50_eur",
+    "p90_eur",
+    "p10_adet",
+    "p50_adet",
+    "p90_adet",
+    "gun_adi",
+    "magaza_tipi",
+    "urun_yelpazesi",
+    "rakip_mesafe_m",
+    "promo2",
+    "tipik_gunluk_ciro_eur",
+    "magaza_smape_val",
+    "magaza_smape_test",
+    "magaza_kapsama_test",
+    "magaza_kapsama_val",
+    "magaza_n_val"
+  ],
+  "uyari": "promo_var senaryosu kars-olgusal: 28 gun kesintisiz promo egitim dagiliminda yok, mutlak degil GORECE karsilastirma icin kullanilmali",
+  "sizinti_notu": "gercek satis kolonu bilincli olarak YOK",
+  "belirsizlik_kapisi": "magaza_smape_val + magaza_kapsama_val (binom, n=magaza_n_val); magaza_*_test kolonlari yalniz geriye donuk degerlendirme icindir"
+}

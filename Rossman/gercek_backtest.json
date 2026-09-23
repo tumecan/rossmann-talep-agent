@@ -1,0 +1,112 @@
+{
+  "politika": {
+    "model_hatasinin_bedeli_eur": 628793,
+    "siparis_politikasinin_degeri_eur": 7574622,
+    "ulasilabilir_degerin_yakalanan_orani_%": 92.3,
+    "plan_vs_gercek_kayip_farki_eur": 312566,
+    "hafta": [
+      {
+        "hafta": 1,
+        "model_hatasi_eur": 79473.52653661181,
+        "gercek_talep": 1029393.4403391574,
+        "eur_per_100_adet": 7.72
+      },
+      {
+        "hafta": 2,
+        "model_hatasi_eur": 128397.3262035224,
+        "gercek_talep": 1295002.2192970365,
+        "eur_per_100_adet": 9.91
+      },
+      {
+        "hafta": 3,
+        "model_hatasi_eur": 193969.6534543478,
+        "gercek_talep": 996049.6148422956,
+        "eur_per_100_adet": 19.47
+      },
+      {
+        "hafta": 4,
+        "model_hatasi_eur": 226951.93677081418,
+        "gercek_talep": 1338461.3699446283,
+        "eur_per_100_adet": 16.96
+      }
+    ],
+    "kapi": [
+      {
+        "kapi": "acik",
+        "model_hatasi_eur": 592528.9260807284,
+        "talep": 4439690.691156546,
+        "eur_per_100_adet": 13.35
+      },
+      {
+        "kapi": "kapali (zayif)",
+        "model_hatasi_eur": 36263.51688456783,
+        "talep": 219215.9532665722,
+        "eur_per_100_adet": 16.54
+      }
+    ]
+  },
+  "gun_bazli": {
+    "acik_gun": 26845,
+    "karar_dagilimi_%": {
+      "bekle": 49.2,
+      "siparis_ver": 46.7,
+      "insana_sor": 3.9,
+      "indirim_uygula": 0.2
+    },
+    "onay_yuku_%": 33.1,
+    "fire": {
+      "gercek_fire_gun": 654,
+      "gercek_fire_eur": 341616,
+      "yakalanan_gun": 325,
+      "yakalanan_eur": 267032,
+      "kacirilan_gun": 329,
+      "kacirilan_eur": 74584,
+      "gereksiz_indirim_gun": 3
+    },
+    "stok_uyarisi": {
+      "gercek_tukenme_gun": 12638,
+      "gercek_kacan_kar_eur": 1188944,
+      "uyari_gun": 16506,
+      "isabet_precision_%": 76.5,
+      "yakalama_recall_%": 99.9,
+      "uyarili_kacan_kar_eur": 1188146
+    }
+  },
+  "esik_duyarlilik": [
+    {
+      "fire_esigi": 0.2,
+      "indirim_sinyali": 521,
+      "yakalanan_eur": 313054,
+      "kacirilan_eur": 28562,
+      "gereksiz_gun": 40
+    },
+    {
+      "fire_esigi": 0.3,
+      "indirim_sinyali": 395,
+      "yakalanan_eur": 286272,
+      "kacirilan_eur": 55344,
+      "gereksiz_gun": 7
+    },
+    {
+      "fire_esigi": 0.4,
+      "indirim_sinyali": 328,
+      "yakalanan_eur": 267032,
+      "kacirilan_eur": 74584,
+      "gereksiz_gun": 3
+    },
+    {
+      "fire_esigi": 0.6,
+      "indirim_sinyali": 233,
+      "yakalanan_eur": 217413,
+      "kacirilan_eur": 124204,
+      "gereksiz_gun": 1
+    },
+    {
+      "fire_esigi": 0.8,
+      "indirim_sinyali": 152,
+      "yakalanan_eur": 156858,
+      "kacirilan_eur": 184758,
+      "gereksiz_gun": 1
+    }
+  ]
+}

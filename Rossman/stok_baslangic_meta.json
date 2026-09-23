@@ -1,0 +1,82 @@
+{
+  "referans_gun": "2015-07-03",
+  "referans_gun_adi": "Cum",
+  "aciklama": "Rossmann veri setinde stok YOK; belgelenmis kural ve sabit seed ile uretildi",
+  "seed": 42,
+  "varsayimlar": {
+    "taze_oran": 0.2,
+    "birim_fiyat_eur": 8.0,
+    "raf_omru_gun": 3,
+    "fire_kurali": "teslim gunu dahil 3 gun satilabilir; yas 3 -> fire"
+  },
+  "kural": {
+    "carpan_dagilimi": "Lognormal(medyan=1.6, sigma=1.25)",
+    "kalan_oran_normal": [
+      1.0,
+      0.45,
+      0.18
+    ],
+    "kalan_oran_yavas": [
+      1.0,
+      0.7,
+      0.5
+    ],
+    "yavas_devir_orani": 0.15,
+    "teslimat_olasilik": 0.8,
+    "gurultu": [
+      0.7,
+      1.3
+    ],
+    "tedarikci_gunler": {
+      "Schnellware": [
+        0,
+        2,
+        4
+      ],
+      "Nordmann": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "ExpressLog": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "Rheinland": [
+        1,
+        3
+      ]
+    },
+    "tedarikci_pay": {
+      "Schnellware": 0.55,
+      "Rheinland": 0.2,
+      "Nordmann": 0.15,
+      "ExpressLog": 0.1
+    }
+  },
+  "ozet": {
+    "magaza": 1115,
+    "toplam_stok_adet": 270386.69999999995,
+    "stok_gun_medyan": 1.21,
+    "bir_gunden_az_stok_magaza": 493,
+    "yarin_fire_riski_magaza": 755,
+    "yarin_fire_riski_birim": 40011.1,
+    "kalan_raf_omru_dagilimi": {
+      "1": 755,
+      "2": 229,
+      "3": 131
+    },
+    "tedarikci_stok_gun_medyan": {
+      "ExpressLog": 2.08,
+      "Nordmann": 1.62,
+      "Rheinland": 0.69,
+      "Schnellware": 1.5
+    }
+  }
+}

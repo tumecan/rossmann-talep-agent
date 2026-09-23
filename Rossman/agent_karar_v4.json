@@ -1,0 +1,56 @@
+{
+  "zaman": "2026-09-13T16:26:43",
+  "model": "gpt-4o-mini",
+  "prompt_surum": "v4",
+  "mimari": "langchain create_agent (3 tool)",
+  "tool_trace": [
+    {
+      "tool": "tahmin_getir",
+      "args": {
+        "tarih": "2015-07-09"
+      }
+    },
+    {
+      "tool": "stok_getir",
+      "args": {
+        "tarih": "2015-07-09"
+      }
+    },
+    {
+      "tool": "ihtiyac_hesapla",
+      "args": {
+        "tahmin_satis": 3299.8,
+        "guven_alt": 2285.5,
+        "guven_ust": 4308.6,
+        "mevcut_stok": 3037.6,
+        "promo_var_mi": false
+      }
+    }
+  ],
+  "girdi": {
+    "magaza": 1,
+    "tarih": "2015-07-09",
+    "tahmin_satis": 3299.8,
+    "guven_alt": 2285.5,
+    "guven_ust": 4308.6,
+    "mevcut_stok": 3037.6,
+    "promo_var_mi": false
+  },
+  "hesaplanan": {
+    "belirsizlik_orani": 0.6131,
+    "emniyet_stogu": 495.0,
+    "gereken_toplam": 3794.8,
+    "ihtiyac": 757.2,
+    "ihtiyac_alt": -257.1,
+    "ihtiyac_ust": 1766.0,
+    "belirsiz_mi": true,
+    "onerilen_miktar": 750
+  },
+  "karar": {
+    "karar": "insana_sor",
+    "miktar": 750,
+    "aciliyet": "yuksek",
+    "gerekce": "Gereken toplam 3794.8, mevcut stok 3037.6; 757.2 birim açık var. İhtiyacın alt sınırı -257.1, üst sınırı 1766.0; karar senaryoya göre değişiyor."
+  },
+  "mudahaleler": []
+}

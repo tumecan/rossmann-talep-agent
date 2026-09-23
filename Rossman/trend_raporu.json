@@ -1,0 +1,354 @@
+{
+  "uretim_zamani": "2026-09-23T18:27:43",
+  "esikler": {
+    "smape_goreli_artis": 0.2,
+    "kapsama_dusus_puan": 3.0,
+    "kapsama_mutlak_alt": 75.0,
+    "p90_ustu_artis_puan": 3.0,
+    "bias_mutlak": 5.0,
+    "onay_yuku_artis_puan": 10.0,
+    "kacirilan_kat": 2.0,
+    "model_hatasi_kat": 1.5
+  },
+  "model": {
+    "haftalik": [
+      {
+        "hafta": 1,
+        "etiket": "H1 (07-04 - 07-10)",
+        "n": 6717,
+        "sMAPE": 8.6,
+        "wMAPE": 8.36,
+        "bias_%": 0.1,
+        "kapsama_%": 80.3,
+        "p10_alti_%": 12.0,
+        "p90_ustu_%": 7.7,
+        "kupiec_lr": 0.39,
+        "kupiec_red": false
+      },
+      {
+        "hafta": 2,
+        "etiket": "H2 (07-11 - 07-17)",
+        "n": 6708,
+        "sMAPE": 7.42,
+        "wMAPE": 7.17,
+        "bias_%": 2.38,
+        "kapsama_%": 78.7,
+        "p10_alti_%": 16.7,
+        "p90_ustu_%": 4.6,
+        "kupiec_lr": 7.33,
+        "kupiec_red": true
+      },
+      {
+        "hafta": 3,
+        "etiket": "H3 (07-18 - 07-24)",
+        "n": 6710,
+        "sMAPE": 8.31,
+        "wMAPE": 8.22,
+        "bias_%": -4.31,
+        "kapsama_%": 76.8,
+        "p10_alti_%": 5.2,
+        "p90_ustu_%": 18.0,
+        "kupiec_lr": 42.61,
+        "kupiec_red": true
+      },
+      {
+        "hafta": 4,
+        "etiket": "H4 (07-25 - 07-31)",
+        "n": 6710,
+        "sMAPE": 9.03,
+        "wMAPE": 8.78,
+        "bias_%": -1.83,
+        "kapsama_%": 73.8,
+        "p10_alti_%": 12.5,
+        "p90_ustu_%": 13.7,
+        "kupiec_lr": 150.48,
+        "kupiec_red": true
+      }
+    ],
+    "gunluk": [
+      {
+        "tarih": "2015-07-04",
+        "sMAPE": 13.96,
+        "kapsama_%": 67.2,
+        "bias_%": 10.34
+      },
+      {
+        "tarih": "2015-07-05",
+        "sMAPE": 24.9,
+        "kapsama_%": 54.5,
+        "bias_%": -3.62
+      },
+      {
+        "tarih": "2015-07-06",
+        "sMAPE": 7.27,
+        "kapsama_%": 83.5,
+        "bias_%": -2.85
+      },
+      {
+        "tarih": "2015-07-07",
+        "sMAPE": 8.04,
+        "kapsama_%": 80.2,
+        "bias_%": 3.65
+      },
+      {
+        "tarih": "2015-07-08",
+        "sMAPE": 8.09,
+        "kapsama_%": 81.0,
+        "bias_%": -4.79
+      },
+      {
+        "tarih": "2015-07-09",
+        "sMAPE": 7.37,
+        "kapsama_%": 84.3,
+        "bias_%": -3.56
+      },
+      {
+        "tarih": "2015-07-10",
+        "sMAPE": 6.37,
+        "kapsama_%": 86.4,
+        "bias_%": -0.19
+      },
+      {
+        "tarih": "2015-07-11",
+        "sMAPE": 8.22,
+        "kapsama_%": 77.4,
+        "bias_%": 5.03
+      },
+      {
+        "tarih": "2015-07-12",
+        "sMAPE": 10.35,
+        "kapsama_%": 93.8,
+        "bias_%": -4.52
+      },
+      {
+        "tarih": "2015-07-13",
+        "sMAPE": 7.58,
+        "kapsama_%": 79.0,
+        "bias_%": 3.31
+      },
+      {
+        "tarih": "2015-07-14",
+        "sMAPE": 6.36,
+        "kapsama_%": 83.0,
+        "bias_%": 0.51
+      },
+      {
+        "tarih": "2015-07-15",
+        "sMAPE": 6.44,
+        "kapsama_%": 83.6,
+        "bias_%": -0.07
+      },
+      {
+        "tarih": "2015-07-16",
+        "sMAPE": 6.93,
+        "kapsama_%": 80.8,
+        "bias_%": 0.76
+      },
+      {
+        "tarih": "2015-07-17",
+        "sMAPE": 8.9,
+        "kapsama_%": 67.9,
+        "bias_%": 5.9
+      },
+      {
+        "tarih": "2015-07-18",
+        "sMAPE": 8.1,
+        "kapsama_%": 79.1,
+        "bias_%": -5.28
+      },
+      {
+        "tarih": "2015-07-19",
+        "sMAPE": 19.67,
+        "kapsama_%": 68.8,
+        "bias_%": -17.14
+      },
+      {
+        "tarih": "2015-07-20",
+        "sMAPE": 9.35,
+        "kapsama_%": 71.1,
+        "bias_%": -7.37
+      },
+      {
+        "tarih": "2015-07-21",
+        "sMAPE": 7.06,
+        "kapsama_%": 83.8,
+        "bias_%": -1.62
+      },
+      {
+        "tarih": "2015-07-22",
+        "sMAPE": 7.3,
+        "kapsama_%": 82.4,
+        "bias_%": 0.25
+      },
+      {
+        "tarih": "2015-07-23",
+        "sMAPE": 10.55,
+        "kapsama_%": 63.4,
+        "bias_%": -8.24
+      },
+      {
+        "tarih": "2015-07-24",
+        "sMAPE": 7.2,
+        "kapsama_%": 81.0,
+        "bias_%": -2.19
+      },
+      {
+        "tarih": "2015-07-25",
+        "sMAPE": 10.81,
+        "kapsama_%": 66.8,
+        "bias_%": -1.93
+      },
+      {
+        "tarih": "2015-07-26",
+        "sMAPE": 18.53,
+        "kapsama_%": 78.1,
+        "bias_%": -15.72
+      },
+      {
+        "tarih": "2015-07-27",
+        "sMAPE": 8.47,
+        "kapsama_%": 74.4,
+        "bias_%": -4.6
+      },
+      {
+        "tarih": "2015-07-28",
+        "sMAPE": 7.71,
+        "kapsama_%": 78.4,
+        "bias_%": -3.89
+      },
+      {
+        "tarih": "2015-07-29",
+        "sMAPE": 7.92,
+        "kapsama_%": 77.7,
+        "bias_%": 3.57
+      },
+      {
+        "tarih": "2015-07-30",
+        "sMAPE": 9.57,
+        "kapsama_%": 69.5,
+        "bias_%": 5.09
+      },
+      {
+        "tarih": "2015-07-31",
+        "sMAPE": 9.45,
+        "kapsama_%": 75.8,
+        "bias_%": -7.17
+      }
+    ],
+    "egim_smape": {
+      "egim_gun": -0.052,
+      "r": -0.097
+    },
+    "egim_kapsama": {
+      "egim_gun": -0.117,
+      "r": -0.117
+    }
+  },
+  "karar": {
+    "durum": "tamam",
+    "kaynak": "gercek satis (gercek_backtest.py)",
+    "haftalik": [
+      {
+        "hafta": 1,
+        "etiket": "H1 (07-04 - 07-10)",
+        "n": 6717,
+        "siparis_ver_%": 45.5,
+        "indirim_uygula_%": 0.7,
+        "bekle_%": 47.4,
+        "insana_sor_%": 6.4,
+        "onay_yuku_%": 35.7,
+        "fire_yakalama_%": 66.7,
+        "kacirilan_gun": 145,
+        "kacirilan_eur": 35477.0,
+        "devredilen_eur": 223933.0,
+        "model_hatasi_eur_100_adet": 7.72
+      },
+      {
+        "hafta": 2,
+        "etiket": "H2 (07-11 - 07-17)",
+        "n": 6708,
+        "siparis_ver_%": 50.1,
+        "indirim_uygula_%": 0.0,
+        "bekle_%": 46.7,
+        "insana_sor_%": 3.2,
+        "onay_yuku_%": 34.1,
+        "fire_yakalama_%": 7.7,
+        "kacirilan_gun": 72,
+        "kacirilan_eur": 13338.0,
+        "devredilen_eur": 8185.0,
+        "model_hatasi_eur_100_adet": 9.91
+      },
+      {
+        "hafta": 3,
+        "etiket": "H3 (07-18 - 07-24)",
+        "n": 6710,
+        "siparis_ver_%": 50.1,
+        "indirim_uygula_%": 0.0,
+        "bekle_%": 46.7,
+        "insana_sor_%": 3.2,
+        "onay_yuku_%": 34.1,
+        "fire_yakalama_%": 5.0,
+        "kacirilan_gun": 19,
+        "kacirilan_eur": 3546.0,
+        "devredilen_eur": 6572.0,
+        "model_hatasi_eur_100_adet": 19.47
+      },
+      {
+        "hafta": 4,
+        "etiket": "H4 (07-25 - 07-31)",
+        "n": 6710,
+        "siparis_ver_%": 41.2,
+        "indirim_uygula_%": 0.0,
+        "bekle_%": 56.0,
+        "insana_sor_%": 2.8,
+        "onay_yuku_%": 28.6,
+        "fire_yakalama_%": 22.5,
+        "kacirilan_gun": 93,
+        "kacirilan_eur": 22223.0,
+        "devredilen_eur": 19282.0,
+        "model_hatasi_eur_100_adet": 16.96
+      }
+    ]
+  },
+  "insan": {
+    "durum": "yetersiz",
+    "mesaj": "2 gun kayit var; trend icin en az 3 gun gerekir.",
+    "gunluk": [
+      {
+        "gun": "2026-09-21",
+        "karar": 3,
+        "onaylandi": 1,
+        "reddedildi": 2,
+        "onay_orani_%": 33.3,
+        "red_sebepleri": {
+          "diger": 1,
+          "parametre": 1
+        }
+      },
+      {
+        "gun": "2026-09-22",
+        "karar": 8,
+        "onaylandi": 4,
+        "reddedildi": 4,
+        "onay_orani_%": 50.0,
+        "red_sebepleri": {
+          "diger": 1,
+          "parametre": 2,
+          "model": 1
+        }
+      }
+    ]
+  },
+  "alarmlar": [
+    {
+      "alan": "model",
+      "seviye": "orta",
+      "mesaj": "Kapsama son hafta %73.8, onceki ort. %78.6 (hedef %80)"
+    },
+    {
+      "alan": "model",
+      "seviye": "orta",
+      "mesaj": "p90 ustu ihlal %10.1 -> %13.7: gercek talep ust bandi daha sik asiyor, stoksuzluk riski artar"
+    }
+  ]
+}

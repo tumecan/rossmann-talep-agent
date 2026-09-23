@@ -1,0 +1,66 @@
+{
+  "toplam_olay": 9,
+  "benzersiz_karar": 5,
+  "onaylandi": 1,
+  "reddedildi": 4,
+  "onay_orani": 0.2,
+  "karar_turune_gore": {
+    "insana_sor": {
+      "onay": 0,
+      "red": 1
+    },
+    "indirim_uygula": {
+      "onay": 1,
+      "red": 1
+    },
+    "siparis_ver": {
+      "onay": 0,
+      "red": 2
+    }
+  },
+  "red_sebepleri": {
+    "zamanlama": 1,
+    "model": 1,
+    "diger": 1,
+    "parametre": 1
+  },
+  "min_gozlem": 5,
+  "oneriler": [
+    {
+      "baslik": "Belirsizlik kapisi cok gevsek",
+      "gozlem": 1,
+      "yeterli_veri": false,
+      "aciklama": "1 karar 'tahmin gercekci degil' ile reddedildi. Bu kararlarin sMAPE araligi 8.3-8.3. Esik bu araligin altina cekilirse benzer kararlar otomatik uretilmez, insana devredilir.",
+      "alan": "SMAPE_BELIRSIZ_ESIK",
+      "mevcut": 20.0,
+      "onerilen": 7.3
+    },
+    {
+      "baslik": "Miktar/oran formulu sorgulaniyor",
+      "gozlem": 1,
+      "yeterli_veri": false,
+      "aciklama": "1 karar 'miktar/oran yanlis' ile reddedildi (0 indirim, 1 siparis).  Siparis miktari formulu (p50 x emniyet esigi - stok) gozden gecirilmeli.",
+      "alan": null,
+      "mevcut": null,
+      "onerilen": null
+    },
+    {
+      "baslik": "Zamanlama mantigi eksik",
+      "gozlem": 1,
+      "yeterli_veri": false,
+      "aciklama": "1 karar 'zamanlama uygun degil' ile reddedildi. Kural motoru yalnizca O GUNE bakiyor; tedarikci lead-time'i ve kalan raf omru ile birlikte degerlendirmiyor. Kararin bir gun once/sonra alinmasi gerekiyorsa bu kurala girmeli.",
+      "alan": null,
+      "mevcut": null,
+      "onerilen": null
+    },
+    {
+      "baslik": "Onay yuku yuksek",
+      "gozlem": 5,
+      "yeterli_veri": true,
+      "aciklama": "Kararlarin %100'i onaya gidiyor. Bu oran yuksek kalirsa sistem 'karar veren' degil 'oneri hazirlayan' konuma duser. Onay esigi (EUR) yukseltilebilir veya belirsizlik kapisi daraltilabilir; ikisi de kacirilan riski artirir — karar_degerlendirme.py --duyarlilik ile takas olculmelidir.",
+      "alan": null,
+      "mevcut": null,
+      "onerilen": null
+    }
+  ]
+}

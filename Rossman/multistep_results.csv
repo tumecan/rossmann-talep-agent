@@ -1,0 +1,4 @@
+,Model,MAE,RMSE,MAPE,sMAPE,RMSPE,R2
+Prophet,Prophet (42 gün),347.7,447.0,8.0,7.85,10.38,0.5975
+LSTM,"LSTM (42 gün, recursive)",934.6,1076.1,23.2,20.01,27.91,-1.3327
+XGBoost,"XGBoost (42 gün, recursive)",275.0,341.7,6.22,6.14,7.82,0.7648

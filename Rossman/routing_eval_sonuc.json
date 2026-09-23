@@ -1,0 +1,655 @@
+{
+  "tarih": "2026-09-21T23:16:50",
+  "toplam": 59,
+  "dogru": 59,
+  "oran": 100.0,
+  "yasakli_ihlali": 0,
+  "arac_bazli": {
+    "tukenme_riski": {
+      "dogru": 5,
+      "toplam": 5
+    },
+    "sevkiyat_plani_getir": {
+      "dogru": 5,
+      "toplam": 5
+    },
+    "en_cok_ihtiyac_duyan": {
+      "dogru": 4,
+      "toplam": 4
+    },
+    "segment_ozeti": {
+      "dogru": 5,
+      "toplam": 5
+    },
+    "model_performansi": {
+      "dogru": 4,
+      "toplam": 4
+    },
+    "raf_omru_durumu": {
+      "dogru": 5,
+      "toplam": 5
+    },
+    "dagitim_plani": {
+      "dogru": 4,
+      "toplam": 4
+    },
+    "magaza_karsilastir": {
+      "dogru": 4,
+      "toplam": 4
+    },
+    "promo_senaryosu": {
+      "dogru": 4,
+      "toplam": 4
+    },
+    "tedarikci_bilgisi_ara": {
+      "dogru": 5,
+      "toplam": 5
+    },
+    "trend_ozeti": {
+      "dogru": 4,
+      "toplam": 4
+    },
+    "karar_uret": {
+      "dogru": 6,
+      "toplam": 6
+    },
+    "__reddedilmeli__": {
+      "dogru": 4,
+      "toplam": 4
+    }
+  },
+  "karisma": {},
+  "detay": [
+    {
+      "soru": "Hangi mağazalarda stok tükeniyor?",
+      "beklenen": "tukenme_riski",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "tukenme_riski"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Önümüzdeki iki haftada risk altındaki mağazalar hangileri?",
+      "beklenen": "tukenme_riski",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "tukenme_riski"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "En erken hangi mağaza tükenir?",
+      "beklenen": "tukenme_riski",
+      "yasakli": null,
+      "gelen": [
+        "tukenme_riski"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "10-20 Temmuz arasında kaç mağaza stoksuz kalır?",
+      "beklenen": "tukenme_riski",
+      "yasakli": null,
+      "gelen": [
+        "tukenme_riski"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Stok tükenen mağazalara promosyon yapılmalı mı?",
+      "beklenen": "tukenme_riski",
+      "yasakli": null,
+      "gelen": [
+        "tukenme_riski",
+        "promo_senaryosu",
+        "promo_senaryosu",
+        "promo_senaryosu",
+        "promo_senaryosu",
+        "promo_senaryosu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "7 Temmuz sevkiyat planı ne?",
+      "beklenen": "sevkiyat_plani_getir",
+      "yasakli": null,
+      "gelen": [
+        "sevkiyat_plani_getir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Bugün kimlere mal gönderilecek?",
+      "beklenen": "sevkiyat_plani_getir",
+      "yasakli": null,
+      "gelen": [
+        "sevkiyat_plani_getir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Yarın teslim edilecek siparişler?",
+      "beklenen": "sevkiyat_plani_getir",
+      "yasakli": null,
+      "gelen": [
+        "sevkiyat_plani_getir",
+        "sevkiyat_plani_getir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "15 Temmuz'da hangi tedarikçiden sevkiyat var?",
+      "beklenen": "sevkiyat_plani_getir",
+      "yasakli": null,
+      "gelen": [
+        "sevkiyat_plani_getir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Bu hafta toplam kaç sipariş gönderilecek?",
+      "beklenen": "sevkiyat_plani_getir",
+      "yasakli": null,
+      "gelen": [
+        "sevkiyat_plani_getir",
+        "sevkiyat_plani_getir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "En çok ihtiyacı olan mağazalar hangileri?",
+      "beklenen": "en_cok_ihtiyac_duyan",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "en_cok_ihtiyac_duyan"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Önceliği kime verelim?",
+      "beklenen": "en_cok_ihtiyac_duyan",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "en_cok_ihtiyac_duyan"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Acil stok gereken mağazalar?",
+      "beklenen": "en_cok_ihtiyac_duyan",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "en_cok_ihtiyac_duyan"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Hangi mağaza en çok satış kaçırıyor?",
+      "beklenen": "en_cok_ihtiyac_duyan",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "en_cok_ihtiyac_duyan"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "B tipi mağazalar nasıl?",
+      "beklenen": "segment_ozeti",
+      "yasakli": null,
+      "gelen": [
+        "segment_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza tipleri arasında fark var mı?",
+      "beklenen": "segment_ozeti",
+      "yasakli": null,
+      "gelen": [
+        "segment_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Hangi segment daha riskli?",
+      "beklenen": "segment_ozeti",
+      "yasakli": null,
+      "gelen": [
+        "segment_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "A tipi ile D tipi mağazaları karşılaştır",
+      "beklenen": "segment_ozeti",
+      "yasakli": null,
+      "gelen": [
+        "segment_ozeti",
+        "segment_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Ürün yelpazesi c olan mağazaların durumu ne?",
+      "beklenen": "segment_ozeti",
+      "yasakli": null,
+      "gelen": [
+        "segment_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 530'un tahmini ne kadar güvenilir?",
+      "beklenen": "model_performansi",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "model_performansi"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Bu sayılara güvenebilir miyim, mağaza 100?",
+      "beklenen": "model_performansi",
+      "yasakli": null,
+      "gelen": [
+        "model_performansi"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 850'nin hata oranı kaç?",
+      "beklenen": "model_performansi",
+      "yasakli": null,
+      "gelen": [
+        "model_performansi"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 730'un tahmini güvenilir mi?",
+      "beklenen": "model_performansi",
+      "yasakli": null,
+      "gelen": [
+        "model_performansi"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Kimde raf ömrü doluyor?",
+      "beklenen": "raf_omru_durumu",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "raf_omru_durumu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Bayat mal kimde birikmiş?",
+      "beklenen": "raf_omru_durumu",
+      "yasakli": null,
+      "gelen": [
+        "raf_omru_durumu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "10 Temmuz'da fire riski olan mağazalar?",
+      "beklenen": "raf_omru_durumu",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "raf_omru_durumu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "4 Temmuz'da hangi mağazalarda ürün çöpe gidecek?",
+      "beklenen": "raf_omru_durumu",
+      "yasakli": null,
+      "gelen": [
+        "raf_omru_durumu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "4 Temmuz'da ne kadar fire var?",
+      "beklenen": "raf_omru_durumu",
+      "yasakli": null,
+      "gelen": [
+        "raf_omru_durumu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Elimde 50 bin birim var nasıl dağıtayım, 10 Temmuz?",
+      "beklenen": "dagitim_plani",
+      "yasakli": null,
+      "gelen": [
+        "dagitim_plani"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Kısıtlı stoğu kime verelim, 30 bin birim, 10 Temmuz?",
+      "beklenen": "dagitim_plani",
+      "yasakli": null,
+      "gelen": [
+        "dagitim_plani"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "20 bin birim dağıtmam lazım, 15 Temmuz için",
+      "beklenen": "dagitim_plani",
+      "yasakli": null,
+      "gelen": [
+        "dagitim_plani"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "100 bin birimlik dağıtım planı oluştur, 10 Temmuz",
+      "beklenen": "dagitim_plani",
+      "yasakli": null,
+      "gelen": [
+        "dagitim_plani"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 530 ile 1'i karşılaştır",
+      "beklenen": "magaza_karsilastir",
+      "yasakli": null,
+      "gelen": [
+        "magaza_karsilastir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Hangisi daha riskli, 250 mi 800 mü?",
+      "beklenen": "magaza_karsilastir",
+      "yasakli": null,
+      "gelen": [
+        "magaza_karsilastir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 400 mü 900 mü daha kötü?",
+      "beklenen": "magaza_karsilastir",
+      "yasakli": null,
+      "gelen": [
+        "magaza_karsilastir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 100 ile mağaza 200 arasındaki fark ne?",
+      "beklenen": "magaza_karsilastir",
+      "yasakli": null,
+      "gelen": [
+        "magaza_karsilastir"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 200'de promosyon yapsak talep ne olur?",
+      "beklenen": "promo_senaryosu",
+      "yasakli": null,
+      "gelen": [
+        "promo_senaryosu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Kampanya talebi ne kadar artırır, mağaza 50?",
+      "beklenen": "promo_senaryosu",
+      "yasakli": null,
+      "gelen": [
+        "promo_senaryosu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Promosyonun etkisi ne kadar, mağaza 730?",
+      "beklenen": "promo_senaryosu",
+      "yasakli": null,
+      "gelen": [
+        "promo_senaryosu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 1'de kampanya yaparsak ne olur?",
+      "beklenen": "promo_senaryosu",
+      "yasakli": null,
+      "gelen": [
+        "promo_senaryosu"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Schnellware'ın minimum sipariş miktarı ne?",
+      "beklenen": "tedarikci_bilgisi_ara",
+      "yasakli": null,
+      "gelen": [
+        "tedarikci_bilgisi_ara"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "İndirim oranı politikası ne diyor?",
+      "beklenen": "tedarikci_bilgisi_ara",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "tedarikci_bilgisi_ara"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Nordmann hakkında ne biliyorsun?",
+      "beklenen": "tedarikci_bilgisi_ara",
+      "yasakli": null,
+      "gelen": [
+        "tedarikci_bilgisi_ara"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Onay kuralları nedir?",
+      "beklenen": "tedarikci_bilgisi_ara",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "tedarikci_bilgisi_ara"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "ExpressLog ile Rheinland'ı karşılaştırabilir misin?",
+      "beklenen": "tedarikci_bilgisi_ara",
+      "yasakli": null,
+      "gelen": [
+        "tedarikci_bilgisi_ara"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Model zamanla kötüleşiyor mu?",
+      "beklenen": "trend_ozeti",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "trend_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Haftalık trend nasıl gidiyor?",
+      "beklenen": "trend_ozeti",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "trend_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Tahmin performansı haftadan haftaya nasıl değişti?",
+      "beklenen": "trend_ozeti",
+      "yasakli": null,
+      "gelen": [
+        "trend_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Modelde drift var mı?",
+      "beklenen": "trend_ozeti",
+      "yasakli": "karar_uret",
+      "gelen": [
+        "trend_ozeti"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "264 numaralı mağaza için 20 Temmuz'da karar ver",
+      "beklenen": "karar_uret",
+      "yasakli": null,
+      "gelen": [
+        "karar_uret"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 1100'e 6 Temmuz'da sipariş geçelim mi?",
+      "beklenen": "karar_uret",
+      "yasakli": null,
+      "gelen": [
+        "karar_uret",
+        "tukenme_riski"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 418 için 6 Temmuz'da ne yapmalıyım?",
+      "beklenen": "karar_uret",
+      "yasakli": null,
+      "gelen": [
+        "karar_uret"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "500 numaralı mağazaya 15 Temmuz için aksiyon önerisi ver",
+      "beklenen": "karar_uret",
+      "yasakli": null,
+      "gelen": [
+        "karar_uret"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Mağaza 23 için 5 Temmuz'da indirim yapmalı mıyız?",
+      "beklenen": "karar_uret",
+      "yasakli": null,
+      "gelen": [
+        "karar_uret"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "617 numaralı mağazanın 6 Temmuz kararını üret",
+      "beklenen": "karar_uret",
+      "yasakli": null,
+      "gelen": [
+        "karar_uret"
+      ],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Hava nasıl?",
+      "beklenen": "__reddedilmeli__",
+      "yasakli": null,
+      "gelen": [],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Bana bir şiir yaz",
+      "beklenen": "__reddedilmeli__",
+      "yasakli": null,
+      "gelen": [],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Python'da liste nasıl sıralanır?",
+      "beklenen": "__reddedilmeli__",
+      "yasakli": null,
+      "gelen": [],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    },
+    {
+      "soru": "Türkiye'nin başkenti neresi?",
+      "beklenen": "__reddedilmeli__",
+      "yasakli": null,
+      "gelen": [],
+      "eslesme": true,
+      "yasakli_ihlali": false
+    }
+  ]
+}

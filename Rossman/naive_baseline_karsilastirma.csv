@@ -1,0 +1,4 @@
+﻿model,sMAPE_%,MAE,R2
+Prophet,7.22,323.8,0.6289
+naive-1 (dunku satis),10.34,478.6,0.1543
+naive-7 (gecen hafta ayni gun),26.73,1182.1,-2.3118

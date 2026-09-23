@@ -1,0 +1,16 @@
+# ortam ve gizli bilgiler
+.env
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ham veri (Kaggle'dan indirilir)
+Rossman/data/
+
+# yeniden üretilebilir
+Rossman/chroma_tedarikci/
+Rossman/kt_dir/
+
+# kişisel kayıtlar (chat id içerir)
+*.jsonl
+*.log
