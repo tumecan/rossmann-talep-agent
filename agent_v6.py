@@ -1,5 +1,5 @@
 """
-agent_v6.py — FINAL Karar Agent'i (Rossmann bitirme projesi, Faz 5)
+agent_v6.py — FINAL Karar Agent'i (Rossmann stok karar sistemi)
 
 Karar seti: siparis_ver | bekle | indirim_uygula | insana_sor
 

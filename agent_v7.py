@@ -1,5 +1,5 @@
 """
-agent_v7.py — Cok magazali soru-cevap ajani (Rossmann bitirme projesi, Faz 6)
+agent_v7.py — Cok magazali soru-cevap ajani (Rossmann stok karar sistemi)
 
 v6 ILE ILISKISI
     v6 KARAR ajanidir: tek magaza, tek gun, sabit semali JSON uretir, kural

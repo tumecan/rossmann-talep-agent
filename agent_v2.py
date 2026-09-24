@@ -1,5 +1,5 @@
 """
-agent_v2.py — Güvenilir Karar Agent'ı (Rossmann bitirme projesi, Faz 5)
+agent_v2.py — Güvenilir Karar Agent'ı (Rossmann stok karar sistemi)
 
 v1'e göre farklar:
   1) Sayıyı Python hesaplar, LLM sadece yorumlar  -> aynı girdi = aynı miktar
